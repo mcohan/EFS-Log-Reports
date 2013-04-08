@@ -4,10 +4,10 @@
         <title>EFS Via HTTP Access Log</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    [% FOR css IN [ 'jquery.dataTables.css', 'jquery.dataTables_themeroller.css', 'bootstrap.css', 'font-awesome.css' ] %]
+    [% FOR css IN [ 'jquery.dataTables.css', 'jquery.dataTables_themeroller.css', 'bootstrap.css', 'bootstrap-responsive.css', 'font-awesome.css' ] %]
         <link href="[% c.uri_for("/static/css/$css") %]" rel="stylesheet" media="screen" type="text/css" />
     [% END %]
-    [% FOR js IN [ 'jquery.js', 'jquery.dataTables.js', 'bootstrap.js' ] %]
+    [% FOR js IN [ 'jquery.js', 'bootstrap.js', 'jquery.dataTables.js', 'd3.js', 'vega.js' ] %]
         <script type="text/javascript" language="javascript" src="[% c.uri_for("/static/javascript/$js") %]"></script>
     [% END %]
     </head>
@@ -117,7 +117,7 @@ $(document).ready(function() {
     $('#access').dataTable( {
         "bProcessing": true,
         "bServerSide": true,
-        "sDom": "<'row'<'span8'l><'span8'f>r>t<'row'<'span8'i><'span8'p>>",
+        "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
         "sPaginationType": "bootstrap",
         "sAjaxSource": "[% c.uri_for('/access/data_dt') %]",
         "fnServerData": function ( sSource, aoData, fnCallback, oSettings ) {
@@ -127,6 +127,8 @@ $(document).ready(function() {
             } );
         }
     } );
+
+    vg.parse.spec("[% c.uri_for('/access/data_chart') %]", function(chart) { chart({el:"#vis"}).update(); });
 } );
 </script>
 
@@ -148,12 +150,28 @@ $(document).ready(function() {
     table.table thead .sorting_desc_disabled { background: url('/static/images/sort_desc_disabled.png') no-repeat center right; }
 </style>
 
-<div class="container" style="width: 90%;">
+<div class="container-fluid">
 
-<div class="hero-unit text-center">
-<h2>
+<h3 class="text-center">
 EFS Via HTTP Access Log
-</h2>
+</h3>
+<div class="row-fluid">
+<span class="span3">
+<div class="well">
+<label>
+Select report options:
+</label>
+<br />
+</div>
+</span>
+<span class="span5">
+<div id="vis"></div>
+</span>
+<span class="span4 well alert-info">
+<label>
+Select chart options:
+</label>
+</span>
 </div>
 
 <table cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-striped table-bordered display" id="access">

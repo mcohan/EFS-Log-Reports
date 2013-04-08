@@ -10,6 +10,8 @@ __PACKAGE__->config(
         dsn => 'dbi:mysql:efs',
         user => 'efs',
         password => 'efs',
+        quote_char => '`',
+        name_sep => '.',
     }
 );
 

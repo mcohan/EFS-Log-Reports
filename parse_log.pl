@@ -49,9 +49,7 @@ use EFS::Log::Reports::Model::DB;
 use EFS::Log::Reports::Schema::DB;
 
 my $connect_info = EFS::Log::Reports::Model::DB->config->{connect_info};
-my @dbi = map{ $connect_info->{$_} } qw/dsn user password/;
-
-my $schema = EFS::Log::Reports::Schema::DB->connect( @dbi );
+my $schema = EFS::Log::Reports::Schema::DB->connect( $connect_info );
 
 my $file = 'sample.txt';
 

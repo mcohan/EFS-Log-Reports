@@ -18,14 +18,4 @@ __PACKAGE__->load_namespaces;
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 
- sub connection {
-     my $self = shift;
-     my $rv = $self->next::method( @_ );
-     $rv->storage->sql_maker->quote_char('`');
-     $rv->storage->sql_maker->name_sep('.');
-     return $rv;
- }
-
-
-
 1;

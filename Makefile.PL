@@ -18,6 +18,12 @@ requires 'namespace::autoclean';
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
 test_requires 'Test::More' => '0.88';
+requires 'Catalyst::View::TT';
+requires 'Catalyst::View::JSON';
+requires 'Catalyst::Model::DBIC::Schema';
+requires 'Stringify::Deep';
+requires 'DateTime';
+requires 'Apache::RegexLog';
 catalyst;
 
 install_script glob('script/*.pl');
