@@ -24,12 +24,41 @@
     <body>
 
     <script type="text/javascript" language="javascript">
+
+    // Show chart
+function show_chart() {
+    var chart_type = $('select#chart_type').val();
+
+    var start_date = $('input#start_date').val();
+    var end_date = $('input#end_date').val();
+    var search = $('div#access_filter.dataTables_filter input').val();
+
+    var values = [ 
+        {
+            name: "start_date",
+            value: start_date
+        },
+        {
+            name: "end_date",
+            value: end_date
+        },
+        {
+            name: "sSearch",
+            value: search
+        },
+    ];
+
+    var query = '?' + $.param(values);
+
+    vg.parse.spec("[% c.uri_for('/access/data_chart') %]/" + chart_type + query, function(chart) { chart({el:"#vis"}).update(); });
+}
+
 $(document).ready(function() {
         /* Default class modification */
             $.extend( $.fn.dataTableExt.oStdClasses, {
                 "sSortAsc": "header headerSortDown",
                 "sSortDesc": "header headerSortUp",
-                "sSortable": "header"
+                "sSortable": "header",
             } );
 
             /* API method to get paging information */
@@ -127,31 +156,61 @@ $(document).ready(function() {
     $('#access').dataTable( {
         "bProcessing": true,
         "bServerSide": true,
+        "bDeferRender": true,
+        "bStateSave": true,
         "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
         "sPaginationType": "bootstrap",
         "sAjaxSource": "[% c.uri_for('/access/data_dt') %]",
-        "fnServerData": function ( sSource, aoData, fnCallback, oSettings ) {
-            /* Add some extra data to the sender */
-            $.getJSON( sSource, aoData, function (json) { 
-                fnCallback(json)
-            } );
+        "fnServerParams": function ( aoData ) {
+            var start_date = $('input#start_date').val();
+            var end_date = $('input#end_date').val();
+
+            aoData.push( { "name": "start_date", "value": start_date } );
+            aoData.push( { "name": "end_date", "value": end_date } );
+
+            // Should probably go in fnDrawCallback
+            show_chart();
         }
     } );
 
-    // Show chart
-    vg.parse.spec("[% c.uri_for('/access/data_chart') %]", function(chart) { chart({el:"#vis"}).update(); });
+    show_chart();
+    $('select#chart_type').change(function() {
+        show_chart();
+    });
 
     // Show datepickers
     $('#report-start-date').datetimepicker({
       pickTime: false
+    }).on('changeDate', function(ev) {
+        $('#access').dataTable().fnDraw();
+        show_chart();
     });
     $('#report-end-date').datetimepicker({
       pickTime: false
+    }).on('changeDate', function(ev) {
+        $('#access').dataTable().fnDraw();
+        show_chart();
+    });
+    $('input#start_date').change(function() {
+        $('#access').dataTable().fnDraw();
+        show_chart();
+    });
+    $('input#end_date').change(function() {
+        $('#access').dataTable().fnDraw();
+        show_chart();
     });
 } );
 </script>
 
 <style>
+
+    .well-left {
+      background-color: #ffdfde;
+    }
+    .well-right {
+      background-color: #d9edf7;
+    }
+
     table.table thead .sorting,
     table.table thead .headerSortUp,
     table.table thead .headerSortDown,
@@ -177,13 +236,13 @@ EFS Via HTTP Access Log
 <div class="row-fluid">
 
 <span class="span3">
-<div class="well" style="min-width: 250px;">
+<div class="well well-left" style="min-width: 250px;">
 
 <legend>
 Report options
 </legend>
 
-<form class="form-horizontal" id="report-form" >
+<form id="report-form" >
 
     <div class="control-group">
     <label class="control-label" for="start_date">Date Range</label>
@@ -212,7 +271,7 @@ Report options
 </div>
 
 <span class="span3">
-<div class="well alert-info" style="min-width: 250px;">
+<div class="well well-right" style="min-width: 250px;">
 
 <form class="form" id="report-form" >
 
@@ -229,7 +288,7 @@ Chart options
         <option value="access_client">Access by Client</option>
         <option value="access_meta">Access by Metaproject</option>
         <option value="access_proj">Access by Project</option>
-        <option value="access_rel">Access by Project/Release</option>
+        <option value="access_rel">Access by Release</option>
         </select>
         </div>
     </div>
