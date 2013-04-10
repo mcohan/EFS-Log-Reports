@@ -2,12 +2,22 @@
 <html>
     <head>
         <title>EFS Via HTTP Access Log</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=7,9,10" >
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    [% FOR css IN [ 'jquery.dataTables.css', 'jquery.dataTables_themeroller.css', 'bootstrap.css', 'bootstrap-responsive.css', 'font-awesome.css' ] %]
+    [% FOR css IN [
+            'jquery.dataTables.css', 'jquery.dataTables_themeroller.css',
+            'bootstrap.css',         'bootstrap-responsive.css',
+            'font-awesome.css',      'bootstrap-datetimepicker.min.css'
+          ] %]
         <link href="[% c.uri_for("/static/css/$css") %]" rel="stylesheet" media="screen" type="text/css" />
     [% END %]
-    [% FOR js IN [ 'jquery.js', 'bootstrap.js', 'jquery.dataTables.js', 'd3.js', 'vega.js' ] %]
+    [% FOR js IN [
+            'jquery.js',                       'sizzle.js',
+            'css3pie.js',                      'bootstrap.js',
+            'bootstrap-datetimepicker.min.js', 'jquery.dataTables.js',
+            'd3.js',                           'vega.js'
+          ] %]
         <script type="text/javascript" language="javascript" src="[% c.uri_for("/static/javascript/$js") %]"></script>
     [% END %]
     </head>
@@ -128,7 +138,16 @@ $(document).ready(function() {
         }
     } );
 
+    // Show chart
     vg.parse.spec("[% c.uri_for('/access/data_chart') %]", function(chart) { chart({el:"#vis"}).update(); });
+
+    // Show datepickers
+    $('#report-start-date').datetimepicker({
+      pickTime: false
+    });
+    $('#report-end-date').datetimepicker({
+      pickTime: false
+    });
 } );
 </script>
 
@@ -156,23 +175,70 @@ $(document).ready(function() {
 EFS Via HTTP Access Log
 </h3>
 <div class="row-fluid">
+
 <span class="span3">
-<div class="well">
-<label>
-Select report options:
-</label>
-<br />
+<div class="well" style="min-width: 250px;">
+
+<legend>
+Report options
+</legend>
+
+<form class="form-horizontal" id="report-form" >
+
+    <div class="control-group">
+    <label class="control-label" for="start_date">Date Range</label>
+    <div class="controls">
+    <div class="input-append" id="report-start-date">
+    <input id="start_date" name="start_date" class="input-medium" type="text" date-format="MM/DD/YYYY" placeholder="MM/DD/YYYY" />
+    <span class="add-on"><i class="icon-calendar" data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+    </div>
+    <label>to</label>
+    <div class="input-append" id="report-end-date">
+    <input id="end_date" name="end_date" class="input-medium" type="text" date-format="MM/DD/YYYY" placeholder="MM/DD/YYYY" />
+    <span class="add-on"><i class="icon-calendar"></i></span>
+    </div>
+    </div>
+    </div>
+
+</form>
+
 </div>
 </span>
-<span class="span5">
+
+<div class="span6">
+<div style="width: 450px; margin-left: auto; margin-right: auto;">
 <div id="vis"></div>
-</span>
-<span class="span4 well alert-info">
-<label>
-Select chart options:
-</label>
-</span>
 </div>
+</div>
+
+<span class="span3">
+<div class="well alert-info" style="min-width: 250px;">
+
+<form class="form" id="report-form" >
+
+<legend>
+Chart options
+</legend>
+
+    <div class="control-group">
+    <label class="control-label" for="chart_type">Chart Type</label>
+    <div class="controls">
+        <div class="input-append">
+        <select name="chart_type" id="chart_type">
+        <option value="access_day">Access by Day</option>
+        <option value="access_client">Access by Client</option>
+        <option value="access_meta">Access by Metaproject</option>
+        <option value="access_proj">Access by Project</option>
+        <option value="access_rel">Access by Project/Release</option>
+        </select>
+        </div>
+    </div>
+    </div>
+
+</form>
+
+</div>
+</span>
 
 <table cellpadding="0" cellspacing="0" border="0" width="100%" class="table table-striped table-bordered display" id="access">
     <thead>

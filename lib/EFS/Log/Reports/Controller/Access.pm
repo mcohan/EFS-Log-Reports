@@ -179,10 +179,10 @@ sub _vega_bar :Private {
     my ( $self ) = @_;
 
     return {
-    'width'  => 600,
-    'height' => 300,
+    'width'  => 450,
+    'height' => 225,
     'padding' => {
-        'left'   => 30,
+        'left'   => 40,
         'right'  => 10,
         'top'    => 10,
         'bottom' => 30

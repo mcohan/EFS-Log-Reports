@@ -1,7 +1,8 @@
 package EFS::Log::Reports::View::JSON;
+use Moose;
 
 use strict;
-use base 'Catalyst::View::JSON';
+extends 'Catalyst::View::JSON';
 
 =head1 NAME
 
@@ -25,5 +26,11 @@ This library is free software, you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =cut
+
+before 'process' => sub {
+    my($self, $c) = @_;
+
+    $c->res->header('Access-Control-Allow-Origin' => '*');
+};
 
 1;
