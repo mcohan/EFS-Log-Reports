@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
     <head>
         <title>EFS Via HTTP Access Log</title>
@@ -31,6 +31,7 @@ function show_chart() {
 
     var start_date = $('input#start_date').val();
     var end_date = $('input#end_date').val();
+    var chart_limit = $('select#chart_limit').val();
     var search = $('div#access_filter.dataTables_filter input').val();
 
     var values = [ 
@@ -41,6 +42,10 @@ function show_chart() {
         {
             name: "end_date",
             value: end_date
+        },
+        {
+            name: "chart_limit",
+            value: chart_limit 
         },
         {
             name: "sSearch",
@@ -177,6 +182,9 @@ $(document).ready(function() {
     $('select#chart_type').change(function() {
         show_chart();
     });
+    $('select#chart_limit').change(function() {
+        show_chart();
+    });
 
     // Show datepickers
     $('#report-start-date').datetimepicker({
@@ -289,6 +297,20 @@ Chart options
         <option value="access_meta">Access by Metaproject</option>
         <option value="access_proj">Access by Project</option>
         <option value="access_rel">Access by Release</option>
+        </select>
+        </div>
+    </div>
+    </div>
+
+    <label class="control-label form-inline" for="chart_type">Show records</label>
+    <div class="controls">
+        <div class="input-append">
+        <select name="chart_limit" id="chart_limit">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="">All</option>
         </select>
         </div>
     </div>

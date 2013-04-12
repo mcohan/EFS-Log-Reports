@@ -117,22 +117,24 @@ sub data_dt :Local :Args(0) {
 sub data_chart :Local :CaptureArgs(1) {
     my ( $self, $c, $chart_type ) = @_;
 
-    my $sep = $c->model('DB')->schema->storage->sql_maker->quote_char;
+    my $q = $c->model('DB')->schema->storage->sql_maker->quote_char;
 
     my %charts = (
         "access_meta" => sub {
             shift->_vega_bar_count_col( shift, 'metaproj' );
         },
         "access_proj" => sub {
-            shift->_vega_bar_count_col( shift, \q{CONCAT(metaproj, CONCAT('/', project))} );
+            my $col = 'CONCAT('.$q.'metaproj'.$q.", CONCAT('/', ".$q.'project'.$q.'))';
+            shift->_vega_bar_count_col( shift, \$col );
         },
 
         "access_rel" => sub {
-            shift->_vega_bar_count_col( shift, \q{CONCAT(metaproj, CONCAT('/', CONCAT(project, CONCAT('/', 'release'))))} );
+            my $col = 'CONCAT('.$q.'metaproj'.$q.", CONCAT('/', CONCAT(".$q.'project'.$q.", CONCAT('/', ".$q.'release'.$q.'))))';
+            shift->_vega_bar_count_col( shift, \$col);
         },
 
         "access_day" => sub {
-            my $col = 'CAST('.$sep.'timestamp'.$sep.' AS DATE)';
+            my $col = 'CAST('.$q.'timestamp'.$q.' AS DATE)';
             shift->_vega_bar_count_col( shift, \$col );
         },
 
@@ -168,6 +170,11 @@ sub _vega_bar_count_col :Private {
 
     # Report options
     $access_rs = $self->_handle_report_dates($access_rs, $c);
+
+    my $limit  = $c->req->param('chart_limit');
+    my $offset = 0;
+    $access_rs = $access_rs->search( {}, { rows => $limit, offset => $offset } )
+      if $limit and $limit > 0;
 
     my @values = $access_rs->all;
     $chart_json->{data}->[0]->{values} = \@values;
