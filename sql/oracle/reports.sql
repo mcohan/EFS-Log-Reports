@@ -7,7 +7,7 @@ create table "access"
   "referer"        varchar2(4000),
   "bytes"          number(11),
   "status"         number(11),
-  "timestamp"      timestamp,
+  "timestamp"      date,
   "efsserver"      varchar(256),
   "cell"           varchar(256),
   "metaproj"       varchar(32),
