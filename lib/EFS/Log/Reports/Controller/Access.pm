@@ -117,20 +117,23 @@ sub data_dt :Local :Args(0) {
 sub data_chart :Local :CaptureArgs(1) {
     my ( $self, $c, $chart_type ) = @_;
 
+    my $sep = $c->model('DB')->schema->storage->sql_maker->quote_char;
+
     my %charts = (
         "access_meta" => sub {
             shift->_vega_bar_count_col( shift, 'metaproj' );
         },
         "access_proj" => sub {
-            shift->_vega_bar_count_col( shift, \q{CONCAT(metaproj, '/', project)} );
+            shift->_vega_bar_count_col( shift, \q{CONCAT(metaproj, CONCAT('/', project))} );
         },
 
         "access_rel" => sub {
-            shift->_vega_bar_count_col( shift, \q{CONCAT(metaproj, '/', project, '/', 'release')} );
+            shift->_vega_bar_count_col( shift, \q{CONCAT(metaproj, CONCAT('/', CONCAT(project, CONCAT('/', 'release'))))} );
         },
 
         "access_day" => sub {
-            shift->_vega_bar_count_col( shift, \q{CAST(timestamp AS DATE)} );
+            my $col = 'CAST('.$sep.'timestamp'.$sep.' AS DATE)';
+            shift->_vega_bar_count_col( shift, \$col );
         },
 
         "access_client" => sub {
