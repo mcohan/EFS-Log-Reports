@@ -158,7 +158,10 @@ sub _vega_bar_count_col :Private {
     my $access_rs = $c->model('DB::Access')->search(
         {},
         {
-            select       => [ $col_name, { count => $col_name } ],
+            select => [
+                { ''    => $col_name, -as => 'x' },
+                { count => $col_name, -as => 'y' }
+              ],
             as           => [ 'x',       'y' ],
             group_by     => [ $col_name ],
             result_class => 'DBIx::Class::ResultClass::HashRefInflator',
